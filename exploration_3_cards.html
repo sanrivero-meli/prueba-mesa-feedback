@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulación de Crédito - Exploración 3: Tarjetas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: white;
+            border: 2px solid #333;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+            background: white;
+            border: 2px solid #333;
+            padding: 30px;
+        }
+
+        .input-group {
+            flex: 1;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #333;
+            background: white;
+            font-size: 16px;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .loan-card {
+            background: white;
+            border: 2px solid #333;
+            padding: 25px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .loan-card:hover {
+            background: #f9f9f9;
+        }
+
+        .loan-card.selected {
+            border-color: #000;
+            background: #f0f0f0;
+        }
+
+        .loan-card.selected::before {
+            content: "✓ SELECCIONADO";
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #333;
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #333;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .card-term {
+            font-size: 14px;
+            background: #333;
+            color: white;
+            padding: 5px 10px;
+        }
+
+        .card-payment {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .card-details {
+            margin-bottom: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .card-benefits {
+            margin-top: 15px;
+        }
+
+        .benefit {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .benefit::before {
+            content: "•";
+            margin-right: 8px;
+            font-weight: bold;
+        }
+
+        .card-actions {
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: 2px solid #333;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            background: #333;
+            color: white;
+        }
+
+        .btn.primary {
+            background: #333;
+            color: white;
+        }
+
+        .btn.primary:hover {
+            background: #555;
+        }
+
+        .comparison-section {
+            background: white;
+            border: 2px solid #333;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            border: 1px solid #333;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .comparison-table th {
+            background: #333;
+            color: white;
+        }
+
+        .comparison-table tr.highlight {
+            background: #f0f0f0;
+            font-weight: bold;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .filter-label {
+            font-weight: bold;
+        }
+
+        .filter-select {
+            padding: 8px;
+            border: 1px solid #333;
+            background: white;
+        }
+
+        .recommendation-badge {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: #333;
+            color: white;
+            padding: 5px 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .recommendation-badge.best-value::before {
+            content: "🏆 ";
+        }
+
+        .recommendation-badge.lowest-payment::before {
+            content: "💰 ";
+        }
+
+        .recommendation-badge.shortest-term::before {
+            content: "⚡ ";
+        }
+
+        @media (max-width: 768px) {
+            .input-section {
+                flex-direction: column;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Simulación de Préstamo en Cuotas Fijas</h1>
+            <p>Exploración 3: Comparación de Opciones por Tarjetas</p>
+        </div>
+
+        <div class="input-section">
+            <div class="input-group">
+                <label for="amount">Monto necesario</label>
+                <input type="number" id="amount" value="150000" min="10000" max="500000" step="1000" placeholder="$0">
+            </div>
+            <div class="input-group">
+                <label for="income">Ingresos mensuales</label>
+                <input type="number" id="income" value="50000" min="0" step="1000" placeholder="$0">
+            </div>
+            <div class="input-group">
+                <label for="rate">Tasa de interés (%)</label>
+                <input type="number" id="rate" value="2.5" min="1" max="10" step="0.1">
+            </div>
+        </div>
+
+        <div class="filters">
+            <span class="filter-label">Ordenar por:</span>
+            <select class="filter-select" id="sort-filter">
+                <option value="payment">Cuota mensual (menor a mayor)</option>
+                <option value="total">Total a pagar (menor a mayor)</option>
+                <option value="term">Plazo (menor a mayor)</option>
+                <option value="affordability">% de ingresos (menor a mayor)</option>
+            </select>
+            
+            <span class="filter-label">Mostrar solo:</span>
+            <select class="filter-select" id="affordability-filter">
+                <option value="all">Todas las opciones</option>
+                <option value="affordable">Hasta 30% de ingresos</option>
+                <option value="comfortable">Hasta 20% de ingresos</option>
+            </select>
+        </div>
+
+        <div class="cards-grid" id="cards-container">
+            <!-- Las tarjetas se generarán dinámicamente -->
+        </div>
+
+        <div class="comparison-section">
+            <h2>Tabla comparativa detallada</h2>
+            <table class="comparison-table" id="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Plazo</th>
+                        <th>Cuota Mensual</th>
+                        <th>Total a Pagar</th>
+                        <th>Total Intereses</th>
+                        <th>% de Ingresos</th>
+                        <th>Ahorro vs. 60 meses</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="comparison-tbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let selectedCard = null;
+        let loanOptions = [];
+
+        function calculateMonthlyPayment(principal, rate, term) {
+            const monthlyRate = rate / 100;
+            return (principal * monthlyRate * Math.pow(1 + monthlyRate, term)) / (Math.pow(1 + monthlyRate, term) - 1);
+        }
+
+        function generateLoanOptions() {
+            const amount = parseFloat(document.getElementById('amount').value) || 0;
+            const rate = parseFloat(document.getElementById('rate').value) || 2.5;
+            const income = parseFloat(document.getElementById('income').value) || 0;
+
+            if (amount === 0) return;
+
+            const terms = [12, 18, 24, 36, 48, 60];
+            loanOptions = [];
+
+            terms.forEach(term => {
+                const monthlyPayment = calculateMonthlyPayment(amount, rate, term);
+                const totalPayment = monthlyPayment * term;
+                const totalInterest = totalPayment - amount;
+                const affordabilityPercent = income > 0 ? (monthlyPayment / income) * 100 : 0;
+
+                loanOptions.push({
+                    term,
+                    monthlyPayment,
+                    totalPayment,
+                    totalInterest,
+                    affordabilityPercent,
+                    amount,
+                    rate
+                });
+            });
+
+            // Add recommendations
+            const lowestPayment = Math.min(...loanOptions.map(o => o.monthlyPayment));
+            const lowestTotal = Math.min(...loanOptions.map(o => o.totalPayment));
+            const shortestTerm = Math.min(...loanOptions.map(o => o.term));
+
+            loanOptions.forEach(option => {
+                option.recommendations = [];
+                if (option.monthlyPayment === lowestPayment) {
+                    option.recommendations.push('lowest-payment');
+                }
+                if (option.totalPayment === lowestTotal) {
+                    option.recommendations.push('best-value');
+                }
+                if (option.term === shortestTerm) {
+                    option.recommendations.push('shortest-term');
+                }
+            });
+
+            renderCards();
+            renderComparisonTable();
+        }
+
+        function renderCards() {
+            const container = document.getElementById('cards-container');
+            const sortBy = document.getElementById('sort-filter').value;
+            const affordabilityFilter = document.getElementById('affordability-filter').value;
+            const income = parseFloat(document.getElementById('income').value) || 0;
+
+            // Filter options
+            let filteredOptions = [...loanOptions];
+            if (affordabilityFilter !== 'all' && income > 0) {
+                const maxPercent = affordabilityFilter === 'comfortable' ? 20 : 30;
+                filteredOptions = filteredOptions.filter(option => option.affordabilityPercent <= maxPercent);
+            }
+
+            // Sort options
+            filteredOptions.sort((a, b) => {
+                switch (sortBy) {
+                    case 'payment':
+                        return a.monthlyPayment - b.monthlyPayment;
+                    case 'total':
+                        return a.totalPayment - b.totalPayment;
+                    case 'term':
+                        return a.term - b.term;
+                    case 'affordability':
+                        return a.affordabilityPercent - b.affordabilityPercent;
+                    default:
+                        return 0;
+                }
+            });
+
+            container.innerHTML = '';
+
+            filteredOptions.forEach(option => {
+                const card = document.createElement('div');
+                card.className = 'loan-card';
+                card.onclick = () => selectCard(option);
+
+                let recommendationBadge = '';
+                if (option.recommendations.length > 0) {
+                    const mainRecommendation = option.recommendations[0];
+                    const badgeText = {
+                        'best-value': 'MEJOR VALOR',
+                        'lowest-payment': 'CUOTA MÁS BAJA',
+                        'shortest-term': 'PAGO MÁS RÁPIDO'
+                    };
+                    recommendationBadge = `<div class="recommendation-badge ${mainRecommendation}">${badgeText[mainRecommendation]}</div>`;
+                }
+
+                const affordabilityColor = income > 0 ? 
+                    (option.affordabilityPercent > 30 ? 'red' : 
+                     option.affordabilityPercent > 20 ? 'orange' : 'green') : 'black';
+
+                card.innerHTML = `
+                    ${recommendationBadge}
+                    <div class="card-header">
+                        <div class="card-title">Préstamo ${option.term} meses</div>
+                        <div class="card-term">${option.term}m</div>
+                    </div>
+                    <div class="card-payment">$${Math.round(option.monthlyPayment).toLocaleString()}/mes</div>
+                    <div class="card-details">
+                        <div class="detail-row">
+                            <span>Total a pagar:</span>
+                            <span>$${Math.round(option.totalPayment).toLocaleString()}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Total intereses:</span>
+                            <span>$${Math.round(option.totalInterest).toLocaleString()}</span>
+                        </div>
+                        ${income > 0 ? `<div class="detail-row">
+                            <span>% de ingresos:</span>
+                            <span style="color: ${affordabilityColor}; font-weight: bold;">${option.affordabilityPercent.toFixed(1)}%</span>
+                        </div>` : ''}
+                        <div class="detail-row">
+                            <span>Tasa mensual:</span>
+                            <span>${option.rate}%</span>
+                        </div>
+                    </div>
+                    <div class="card-benefits">
+                        ${getBenefits(option)}
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn primary" onclick="requestLoan(${option.term}); event.stopPropagation();">
+                            Solicitar este préstamo
+                        </button>
+                        <button class="btn" onclick="showDetails(${option.term}); event.stopPropagation();">
+                            Ver detalles
+                        </button>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function getBenefits(option) {
+            const benefits = [];
+            
+            if (option.term <= 24) {
+                benefits.push('<div class="benefit">Pago rápido, menos intereses totales</div>');
+            }
+            
+            if (option.term >= 48) {
+                benefits.push('<div class="benefit">Cuotas más cómodas</div>');
+            }
+            
+            if (option.affordabilityPercent <= 20 && option.affordabilityPercent > 0) {
+                benefits.push('<div class="benefit">Cuota cómoda para tu presupuesto</div>');
+            }
+            
+            if (option.recommendations.includes('best-value')) {
+                benefits.push('<div class="benefit">Mejor relación costo-beneficio</div>');
+            }
+
+            return benefits.join('');
+        }
+
+        function renderComparisonTable() {
+            const tbody = document.getElementById('comparison-tbody');
+            const income = parseFloat(document.getElementById('income').value) || 0;
+            
+            // Reference for savings calculation (longest term)
+            const longestTermOption = loanOptions.find(o => o.term === 60);
+            
+            tbody.innerHTML = '';
+
+            loanOptions.forEach(option => {
+                const row = tbody.insertRow();
+                
+                const savings = longestTermOption ? longestTermOption.totalPayment - option.totalPayment : 0;
+                const affordabilityColor = income > 0 ? 
+                    (option.affordabilityPercent > 30 ? 'red' : 
+                     option.affordabilityPercent > 20 ? 'orange' : 'green') : 'black';
+
+                row.innerHTML = `
+                    <td>${option.term} meses</td>
+                    <td><strong>$${Math.round(option.monthlyPayment).toLocaleString()}</strong></td>
+                    <td>$${Math.round(option.totalPayment).toLocaleString()}</td>
+                    <td>$${Math.round(option.totalInterest).toLocaleString()}</td>
+                    <td style="color: ${affordabilityColor}; font-weight: bold;">
+                        ${income > 0 ? `${option.affordabilityPercent.toFixed(1)}%` : 'N/A'}
+                    </td>
+                    <td style="color: ${savings > 0 ? 'green' : 'gray'};">
+                        ${savings > 0 ? `+$${Math.round(savings).toLocaleString()}` : '$0'}
+                    </td>
+                    <td>
+                        <button class="btn" onclick="requestLoan(${option.term})" style="padding: 8px 15px; font-size: 12px;">
+                            Solicitar
+                        </button>
+                    </td>
+                `;
+
+                // Highlight if this is a recommended option
+                if (option.recommendations.length > 0) {
+                    row.classList.add('highlight');
+                }
+            });
+        }
+
+        function selectCard(option) {
+            // Remove previous selection
+            document.querySelectorAll('.loan-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Add selection to clicked card
+            event.currentTarget.classList.add('selected');
+            selectedCard = option;
+        }
+
+        function requestLoan(term) {
+            const option = loanOptions.find(o => o.term === term);
+            if (!option) return;
+
+            alert(`¡Solicitud enviada!\n\nMonto: $${Math.round(option.amount).toLocaleString()}\nPlazo: ${option.term} meses\nCuota mensual: $${Math.round(option.monthlyPayment).toLocaleString()}\nTotal a pagar: $${Math.round(option.totalPayment).toLocaleString()}\n\nEn una implementación real, aquí comenzaría el proceso de solicitud.`);
+        }
+
+        function showDetails(term) {
+            const option = loanOptions.find(o => o.term === term);
+            if (!option) return;
+
+            // Generate amortization table for first 6 months
+            let amortizationText = "Primeras 6 cuotas:\n\n";
+            let balance = option.amount;
+            const monthlyRate = option.rate / 100;
+
+            for (let i = 1; i <= Math.min(6, option.term); i++) {
+                const interestPayment = balance * monthlyRate;
+                const principalPayment = option.monthlyPayment - interestPayment;
+                balance -= principalPayment;
+
+                amortizationText += `Cuota ${i}: Capital $${Math.round(principalPayment).toLocaleString()}, Interés $${Math.round(interestPayment).toLocaleString()}, Saldo $${Math.round(balance).toLocaleString()}\n`;
+            }
+
+            alert(`Detalles del préstamo a ${option.term} meses:\n\n` +
+                  `Monto: $${Math.round(option.amount).toLocaleString()}\n` +
+                  `Cuota mensual: $${Math.round(option.monthlyPayment).toLocaleString()}\n` +
+                  `Total a pagar: $${Math.round(option.totalPayment).toLocaleString()}\n` +
+                  `Total intereses: $${Math.round(option.totalInterest).toLocaleString()}\n` +
+                  `Tasa mensual: ${option.rate}%\n\n` +
+                  amortizationText);
+        }
+
+        // Event listeners
+        document.getElementById('amount').addEventListener('input', generateLoanOptions);
+        document.getElementById('income').addEventListener('input', generateLoanOptions);
+        document.getElementById('rate').addEventListener('input', generateLoanOptions);
+        document.getElementById('sort-filter').addEventListener('change', renderCards);
+        document.getElementById('affordability-filter').addEventListener('change', renderCards);
+
+        // Initialize
+        generateLoanOptions();
+    </script>
+</body>
+</html>

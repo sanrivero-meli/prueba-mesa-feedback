@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulación de Crédito - Exploración 2: Calculadora</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: white;
+            border: 2px solid #333;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .calculator-panel {
+            background: white;
+            border: 2px solid #333;
+            padding: 30px;
+        }
+
+        .results-panel {
+            background: white;
+            border: 2px solid #333;
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #333;
+            background: white;
+            font-size: 16px;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #333;
+            background: white;
+            font-size: 16px;
+        }
+
+        .slider-container {
+            margin-top: 10px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 20px;
+            background: #ddd;
+            border: 2px solid #333;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            background: #333;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            background: #333;
+            cursor: pointer;
+            border: none;
+        }
+
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .result-card {
+            border: 2px solid #333;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #f9f9f9;
+        }
+
+        .result-card h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric.highlight {
+            font-weight: bold;
+            font-size: 18px;
+            background: white;
+            padding: 15px;
+            margin: 10px -10px;
+        }
+
+        .chart-container {
+            margin: 20px 0;
+            border: 2px solid #333;
+            padding: 20px;
+            background: white;
+        }
+
+        .chart-bar {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .chart-label {
+            width: 100px;
+            font-size: 12px;
+        }
+
+        .chart-visual {
+            flex: 1;
+            height: 20px;
+            border: 1px solid #333;
+            position: relative;
+            background: white;
+        }
+
+        .chart-fill-capital {
+            height: 100%;
+            background: #666;
+        }
+
+        .chart-fill-interest {
+            height: 100%;
+            background: #333;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            border: 1px solid #333;
+            padding: 8px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .comparison-table th {
+            background: #333;
+            color: white;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: 2px solid #333;
+            background: #333;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background: #555;
+        }
+
+        .quick-amounts {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            padding: 8px 15px;
+            border: 1px solid #333;
+            background: white;
+            cursor: pointer;
+            font-size: 12px;
+            flex: 1;
+            min-width: 60px;
+        }
+
+        .quick-btn:hover {
+            background: #333;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Simulación de Préstamo en Cuotas Fijas</h1>
+            <p>Exploración 2: Calculadora en Tiempo Real</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Panel de Calculadora -->
+            <div class="calculator-panel">
+                <h2>Configura tu préstamo</h2>
+                
+                <div class="form-group">
+                    <label for="amount">Monto del préstamo</label>
+                    <div class="input-container">
+                        <input type="number" id="amount" value="100000" min="10000" max="500000" step="1000">
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="amount-slider" class="slider" min="10000" max="500000" value="100000" step="1000">
+                        <div class="range-labels">
+                            <span>$10,000</span>
+                            <span>$500,000</span>
+                        </div>
+                    </div>
+                    <div class="quick-amounts">
+                        <button class="quick-btn" onclick="setAmount(50000)">$50K</button>
+                        <button class="quick-btn" onclick="setAmount(100000)">$100K</button>
+                        <button class="quick-btn" onclick="setAmount(200000)">$200K</button>
+                        <button class="quick-btn" onclick="setAmount(300000)">$300K</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="term">Plazo (meses)</label>
+                    <div class="input-container">
+                        <select id="term">
+                            <option value="12">12 meses</option>
+                            <option value="24" selected>24 meses</option>
+                            <option value="36">36 meses</option>
+                            <option value="48">48 meses</option>
+                            <option value="60">60 meses</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="rate">Tasa de interés mensual (%)</label>
+                    <div class="input-container">
+                        <input type="number" id="rate" value="2.5" min="1" max="10" step="0.1">
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="rate-slider" class="slider" min="1" max="10" value="2.5" step="0.1">
+                        <div class="range-labels">
+                            <span>1%</span>
+                            <span>10%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="income">Ingresos mensuales (opcional)</label>
+                    <input type="number" id="income" placeholder="$0" min="0" step="1000">
+                </div>
+
+                <button class="btn" onclick="requestLoan()">Solicitar este préstamo</button>
+            </div>
+
+            <!-- Panel de Resultados -->
+            <div class="results-panel">
+                <div class="result-card">
+                    <h3>Tu cuota mensual</h3>
+                    <div class="metric highlight">
+                        <span>Cuota fija:</span>
+                        <span id="monthly-payment">$0</span>
+                    </div>
+                    <div class="metric">
+                        <span>Total a pagar:</span>
+                        <span id="total-payment">$0</span>
+                    </div>
+                    <div class="metric">
+                        <span>Total intereses:</span>
+                        <span id="total-interest">$0</span>
+                    </div>
+                    <div class="metric" id="affordability" style="display: none;">
+                        <span>% de ingresos:</span>
+                        <span id="affordability-percent">0%</span>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <h3>Composición de la cuota</h3>
+                    <div class="chart-container">
+                        <div class="chart-bar">
+                            <div class="chart-label">Capital</div>
+                            <div class="chart-visual">
+                                <div class="chart-fill-capital" id="capital-bar" style="width: 50%"></div>
+                            </div>
+                        </div>
+                        <div class="chart-bar">
+                            <div class="chart-label">Interés</div>
+                            <div class="chart-visual">
+                                <div class="chart-fill-interest" id="interest-bar" style="width: 50%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <h3>Comparación por plazo</h3>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Plazo</th>
+                                <th>Cuota</th>
+                                <th>Total</th>
+                                <th>Intereses</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparison-table">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="result-card">
+                    <h3>Primeras 6 cuotas</h3>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Capital</th>
+                                <th>Interés</th>
+                                <th>Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="amortization-preview">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateMonthlyPayment(principal, rate, term) {
+            const monthlyRate = rate / 100;
+            return (principal * monthlyRate * Math.pow(1 + monthlyRate, term)) / (Math.pow(1 + monthlyRate, term) - 1);
+        }
+
+        function updateCalculation() {
+            const amount = parseFloat(document.getElementById('amount').value) || 0;
+            const term = parseInt(document.getElementById('term').value) || 24;
+            const rate = parseFloat(document.getElementById('rate').value) || 2.5;
+            const income = parseFloat(document.getElementById('income').value) || 0;
+
+            if (amount === 0) return;
+
+            const monthlyPayment = calculateMonthlyPayment(amount, rate, term);
+            const totalPayment = monthlyPayment * term;
+            const totalInterest = totalPayment - amount;
+
+            // Update main results
+            document.getElementById('monthly-payment').textContent = `$${Math.round(monthlyPayment).toLocaleString()}`;
+            document.getElementById('total-payment').textContent = `$${Math.round(totalPayment).toLocaleString()}`;
+            document.getElementById('total-interest').textContent = `$${Math.round(totalInterest).toLocaleString()}`;
+
+            // Update affordability if income provided
+            if (income > 0) {
+                const affordabilityPercent = (monthlyPayment / income) * 100;
+                document.getElementById('affordability').style.display = 'flex';
+                document.getElementById('affordability-percent').textContent = `${affordabilityPercent.toFixed(1)}%`;
+                
+                // Color coding for affordability
+                const affordabilityElement = document.getElementById('affordability');
+                if (affordabilityPercent > 30) {
+                    affordabilityElement.style.color = 'red';
+                } else if (affordabilityPercent > 20) {
+                    affordabilityElement.style.color = 'orange';
+                } else {
+                    affordabilityElement.style.color = 'green';
+                }
+            } else {
+                document.getElementById('affordability').style.display = 'none';
+            }
+
+            // Update composition chart
+            const firstMonthInterest = amount * (rate / 100);
+            const firstMonthPrincipal = monthlyPayment - firstMonthInterest;
+            const principalPercent = (firstMonthPrincipal / monthlyPayment) * 100;
+            const interestPercent = (firstMonthInterest / monthlyPayment) * 100;
+
+            document.getElementById('capital-bar').style.width = `${principalPercent}%`;
+            document.getElementById('interest-bar').style.width = `${interestPercent}%`;
+
+            // Update comparison table
+            updateComparisonTable(amount, rate);
+
+            // Update amortization preview
+            updateAmortizationPreview(amount, rate, term, monthlyPayment);
+        }
+
+        function updateComparisonTable(amount, rate) {
+            const terms = [12, 24, 36, 48, 60];
+            const tbody = document.getElementById('comparison-table');
+            tbody.innerHTML = '';
+
+            terms.forEach(termOption => {
+                const payment = calculateMonthlyPayment(amount, rate, termOption);
+                const total = payment * termOption;
+                const interest = total - amount;
+
+                const row = tbody.insertRow();
+                const currentTerm = parseInt(document.getElementById('term').value);
+                
+                if (termOption === currentTerm) {
+                    row.style.backgroundColor = '#f0f0f0';
+                    row.style.fontWeight = 'bold';
+                }
+
+                row.insertCell(0).textContent = `${termOption} meses`;
+                row.insertCell(1).textContent = `$${Math.round(payment).toLocaleString()}`;
+                row.insertCell(2).textContent = `$${Math.round(total).toLocaleString()}`;
+                row.insertCell(3).textContent = `$${Math.round(interest).toLocaleString()}`;
+            });
+        }
+
+        function updateAmortizationPreview(principal, rate, term, payment) {
+            const tbody = document.getElementById('amortization-preview');
+            tbody.innerHTML = '';
+            
+            let balance = principal;
+            const monthlyRate = rate / 100;
+            
+            for (let i = 1; i <= Math.min(term, 6); i++) {
+                const interestPayment = balance * monthlyRate;
+                const principalPayment = payment - interestPayment;
+                balance -= principalPayment;
+
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = i;
+                row.insertCell(1).textContent = `$${Math.round(principalPayment).toLocaleString()}`;
+                row.insertCell(2).textContent = `$${Math.round(interestPayment).toLocaleString()}`;
+                row.insertCell(3).textContent = `$${Math.round(balance).toLocaleString()}`;
+            }
+        }
+
+        function setAmount(amount) {
+            document.getElementById('amount').value = amount;
+            document.getElementById('amount-slider').value = amount;
+            updateCalculation();
+        }
+
+        function requestLoan() {
+            const amount = document.getElementById('amount').value;
+            const term = document.getElementById('term').value;
+            const payment = document.getElementById('monthly-payment').textContent;
+            
+            alert(`¡Solicitud enviada!\n\nMonto: $${parseInt(amount).toLocaleString()}\nPlazo: ${term} meses\nCuota mensual: ${payment}\n\nEn una implementación real, aquí comenzaría el proceso de solicitud.`);
+        }
+
+        // Event listeners
+        document.getElementById('amount').addEventListener('input', function() {
+            document.getElementById('amount-slider').value = this.value;
+            updateCalculation();
+        });
+
+        document.getElementById('amount-slider').addEventListener('input', function() {
+            document.getElementById('amount').value = this.value;
+            updateCalculation();
+        });
+
+        document.getElementById('term').addEventListener('change', updateCalculation);
+
+        document.getElementById('rate').addEventListener('input', function() {
+            document.getElementById('rate-slider').value = this.value;
+            updateCalculation();
+        });
+
+        document.getElementById('rate-slider').addEventListener('input', function() {
+            document.getElementById('rate').value = this.value;
+            updateCalculation();
+        });
+
+        document.getElementById('income').addEventListener('input', updateCalculation);
+
+        // Initialize
+        updateCalculation();
+    </script>
+</body>
+</html>

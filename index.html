@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exploraciones de Simulación de Crédito</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px;
+            background: white;
+            border: 3px solid #333;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .explorations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .exploration-card {
+            background: white;
+            border: 3px solid #333;
+            padding: 30px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+        }
+
+        .exploration-card:hover {
+            background: #f9f9f9;
+            transform: translateY(-5px);
+        }
+
+        .card-number {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .card-description {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .card-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .card-features li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .card-features li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .card-features li:last-child {
+            border-bottom: none;
+        }
+
+        .card-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: #333;
+            color: white;
+            text-align: center;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .card-button:hover {
+            background: #555;
+        }
+
+        .wireframe-preview {
+            margin-top: 20px;
+            border: 2px solid #333;
+            padding: 15px;
+            background: #fafafa;
+        }
+
+        .wireframe-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .wireframe-sketch {
+            height: 120px;
+            border: 1px solid #ccc;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            position: relative;
+        }
+
+        .wireframe-sketch::before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px dashed #999;
+        }
+
+        .comparison-section {
+            background: white;
+            border: 3px solid #333;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            border: 1px solid #333;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .comparison-table th {
+            background: #333;
+            color: white;
+            font-weight: bold;
+        }
+
+        .comparison-table td {
+            vertical-align: top;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .pros, .cons {
+            padding: 15px;
+            border: 2px solid #333;
+        }
+
+        .pros {
+            background: #f0f8ff;
+        }
+
+        .cons {
+            background: #fff8f0;
+        }
+
+        .pros h4, .cons h4 {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .pros ul, .cons ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .pros li::before {
+            content: "✓ ";
+            color: green;
+            font-weight: bold;
+        }
+
+        .cons li::before {
+            content: "⚠ ";
+            color: orange;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .explorations-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Exploraciones de Simulación de Crédito</h1>
+            <p>Tres enfoques diferentes para el flujo de simulación de préstamos en cuotas fijas</p>
+        </div>
+
+        <div class="explorations-grid">
+            <!-- Exploración 1: Wizard -->
+            <a href="exploration_1_wizard.html" class="exploration-card">
+                <div class="card-number">01</div>
+                <h2 class="card-title">Proceso Paso a Paso</h2>
+                <p class="card-description">Wizard guiado que lleva al usuario a través de 4 pasos claramente definidos.</p>
+                
+                <ul class="card-features">
+                    <li>Progreso visual claro</li>
+                    <li>Validación en cada paso</li>
+                    <li>Vista previa de cálculos</li>
+                    <li>Resumen final completo</li>
+                    <li>Tabla de amortización</li>
+                </ul>
+
+                <div class="wireframe-preview">
+                    <div class="wireframe-title">Wireframe: Barra de progreso + Formulario</div>
+                    <div class="wireframe-sketch">
+                        [●●○○] Paso 2 de 4<br>
+                        ┌─────────────────┐<br>
+                        │ Campo de entrada │<br>
+                        └─────────────────┘<br>
+                        [Anterior] [Siguiente]
+                    </div>
+                </div>
+
+                <div class="card-button">Ver Exploración 1</div>
+            </a>
+
+            <!-- Exploración 2: Calculadora -->
+            <a href="exploration_2_calculator.html" class="exploration-card">
+                <div class="card-number">02</div>
+                <h2 class="card-title">Calculadora en Tiempo Real</h2>
+                <p class="card-description">Interfaz dividida con controles a la izquierda y resultados actualizándose en tiempo real.</p>
+                
+                <ul class="card-features">
+                    <li>Actualización inmediata</li>
+                    <li>Controles deslizantes</li>
+                    <li>Comparación visual</li>
+                    <li>Gráficos de composición</li>
+                    <li>Análisis de asequibilidad</li>
+                </ul>
+
+                <div class="wireframe-preview">
+                    <div class="wireframe-title">Wireframe: Panel dividido</div>
+                    <div class="wireframe-sketch">
+                        ┌─────────┬─────────┐<br>
+                        │Controles│Resultados│<br>
+                        │[Slider] │ $X,XXX  │<br>
+                        │[Input]  │ [Chart] │<br>
+                        └─────────┴─────────┘
+                    </div>
+                </div>
+
+                <div class="card-button">Ver Exploración 2</div>
+            </a>
+
+            <!-- Exploración 3: Tarjetas -->
+            <a href="exploration_3_cards.html" class="exploration-card">
+                <div class="card-number">03</div>
+                <h2 class="card-title">Comparación por Tarjetas</h2>
+                <p class="card-description">Muestra todas las opciones como tarjetas comparables con recomendaciones inteligentes.</p>
+                
+                <ul class="card-features">
+                    <li>Comparación visual directa</li>
+                    <li>Recomendaciones automáticas</li>
+                    <li>Filtros y ordenamiento</li>
+                    <li>Badges informativos</li>
+                    <li>Tabla comparativa detallada</li>
+                </ul>
+
+                <div class="wireframe-preview">
+                    <div class="wireframe-title">Wireframe: Grid de tarjetas</div>
+                    <div class="wireframe-sketch">
+                        ┌─────┐ ┌─────┐ ┌─────┐<br>
+                        │ 12m │ │ 24m │ │ 36m │<br>
+                        │$XXX │ │$XXX │ │$XXX │<br>
+                        │[●] │ │[○] │ │[○] │<br>
+                        └─────┘ └─────┘ └─────┘
+                    </div>
+                </div>
+
+                <div class="card-button">Ver Exploración 3</div>
+            </a>
+        </div>
+
+        <div class="comparison-section">
+            <h2>Comparación de Enfoques</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Aspecto</th>
+                        <th>Wizard (01)</th>
+                        <th>Calculadora (02)</th>
+                        <th>Tarjetas (03)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Complejidad cognitiva</strong></td>
+                        <td>Baja - Un paso a la vez</td>
+                        <td>Media - Múltiples controles</td>
+                        <td>Alta - Muchas opciones</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Velocidad de uso</strong></td>
+                        <td>Lenta - Proceso secuencial</td>
+                        <td>Rápida - Cambios inmediatos</td>
+                        <td>Media - Requiere comparación</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Capacidad de comparación</strong></td>
+                        <td>Limitada - Solo opción final</td>
+                        <td>Buena - Tabla comparativa</td>
+                        <td>Excelente - Múltiples opciones</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Experiencia móvil</strong></td>
+                        <td>Excelente - Optimizado</td>
+                        <td>Buena - Responsive</td>
+                        <td>Buena - Grid adaptable</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ideal para</strong></td>
+                        <td>Usuarios nuevos, proceso formal</td>
+                        <td>Usuarios experimentados</td>
+                        <td>Comparadores, decisiones informadas</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="pros-cons">
+                <div class="pros">
+                    <h4>Fortalezas de cada enfoque:</h4>
+                    <ul>
+                        <li><strong>Wizard:</strong> Guía clara, menos errores</li>
+                        <li><strong>Calculadora:</strong> Feedback inmediato, exploración libre</li>
+                        <li><strong>Tarjetas:</strong> Comparación visual, recomendaciones</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h4>Consideraciones de cada enfoque:</h4>
+                    <ul>
+                        <li><strong>Wizard:</strong> Proceso más lento, menos flexibilidad</li>
+                        <li><strong>Calculadora:</strong> Puede abrumar usuarios novatos</li>
+                        <li><strong>Tarjetas:</strong> Sobrecarga de información inicial</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
