@@ -2,6 +2,15 @@
 
 Este repositorio contiene 3 exploraciones funcionales en HTML para rediseñar el flujo de simulación de créditos para préstamos en cuotas fijas. Todas las exploraciones están diseñadas como wireframes en blanco y negro con funcionalidad completa.
 
+## 🌐 Demo en Vivo
+
+**¡Prueba las exploraciones ahora!**
+
+- 🏠 **Página Principal:** [https://sanrivero-meli.github.io/prueba-mesa-feedback/](https://sanrivero-meli.github.io/prueba-mesa-feedback/)
+- 🔹 **Exploración 1 - Wizard:** [https://sanrivero-meli.github.io/prueba-mesa-feedback/exploration_1_wizard.html](https://sanrivero-meli.github.io/prueba-mesa-feedback/exploration_1_wizard.html)
+- 🔹 **Exploración 2 - Calculadora:** [https://sanrivero-meli.github.io/prueba-mesa-feedback/exploration_2_calculator.html](https://sanrivero-meli.github.io/prueba-mesa-feedback/exploration_2_calculator.html)
+- 🔹 **Exploración 3 - Tarjetas:** [https://sanrivero-meli.github.io/prueba-mesa-feedback/exploration_3_cards.html](https://sanrivero-meli.github.io/prueba-mesa-feedback/exploration_3_cards.html)
+
 ## 🎯 Objetivo
 
 Explorar diferentes enfoques de UX para la simulación de préstamos, cada uno optimizado para diferentes tipos de usuarios y casos de uso.
@@ -46,6 +55,10 @@ Explorar diferentes enfoques de UX para la simulación de préstamos, cada uno o
 
 ## 🚀 Cómo usar
 
+### Opción 1: Demo en Vivo (Recomendado)
+Visita directamente los enlaces de arriba para probar las exploraciones en tu navegador.
+
+### Opción 2: Ejecución Local
 1. **Navegación Principal:** Abre `index.html` para ver todas las exploraciones y su comparación
 2. **Exploraciones Individuales:** Abre cualquiera de los archivos HTML específicos
 3. **Funcionalidad Completa:** Todas las simulaciones incluyen cálculos reales de cuotas fijas
